@@ -10,4 +10,58 @@ app.service('itunesService', function($http, $q){
   //You can return the http request or you can make your own promise in order to manipulate the data before you resolve it.
 
     //Code here
+
+  this.getSongs = function(artist) {
+    var deferred = $q.defer();
+    $http({
+      method: 'JSONP',
+      url: 'https://itunes.apple.com/search?term=' + artist + '&callback=JSON_CALLBACK'
+    }).then(function(response) {
+
+      console.log(response.data.results)
+
+      deferred.resolve(response.data.results.map
+        (function(item){
+          return {
+            Play: item.previewUrl,
+            Song: item.trackName,
+            Artist: item.artistName,
+            Collection: item.collectionName,
+            AlbumArt: item.artworkUrl100,
+            Type: item.kind,
+            TrackPrice: item.trackPrice,
+            CollectionPrice: item.collectionPrice
+
+          }
+        })
+      );
+      
+    })
+    return deferred.promise;
+  };
+
+
+
 });
+
+//hack to get data schema is set to a variable by changeing 'this.getSongs' to 'var getSong', set a console log in logic section set to console.log(response), then call getSong("nellie")
+//I doesn't work try to  to comment out 'return deferred.promise'
+
+/* something likd this
+  var getSongs = function(artist) {
+    var deferred = $q.defer();
+    $http({
+      method: 'JSONP',
+      url: 'https://itunes.apple.com/search?term=' + artist + '&callback=JSON_CALLBACK'
+    }).then(function(response) {
+
+      console.log(response)
+
+      deferred.resolve()
+    } 
+    return deferred.promise;
+  };
+
+  */
+
+
